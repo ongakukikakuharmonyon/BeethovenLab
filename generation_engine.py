@@ -933,9 +933,13 @@ class BeethovenComposerAdvanced:
             part.measure(1).insert(0, ts)
         
         # 調号を追加
-        ks = self.context.current_key.asKey().keySignature
-        for part in score.parts:
-            part.measure(1).insert(0, ks)
+try:
+    ks = self.context.current_key.keySignature
+    for part in score.parts:
+        part.measure(1).insert(0, ks)
+except AttributeError:
+    # keySignatureが使えない場合はスキップ
+    pass
         
         # フェルマータを最後に追加
         for part in score.parts:
