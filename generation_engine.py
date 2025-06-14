@@ -626,7 +626,7 @@ class BeethovenComposerAdvanced:
         score.insert(0, left_hand)
         
         # 最終調整
-        self._apply_final_touches(score)
+        self.apply_final_touches(score)
         
         return score
     
@@ -921,7 +921,7 @@ class BeethovenComposerAdvanced:
         
         return m21.dynamics.Dynamic(selected)
     
-def _apply_final_touches(self, score: m21.stream.Score):
+def apply_final_touches(self, score: m21.stream.Score):
         """最終的な調整を適用"""
         # テンポ記号を追加
         tempo = m21.tempo.MetronomeMark(number=120, text="Allegro con brio")
