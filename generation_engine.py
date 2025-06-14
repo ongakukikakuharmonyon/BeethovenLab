@@ -551,35 +551,64 @@ class BeethovenComposerAdvanced:
         self.motivic_developer = MotivicDeveloper()
         self.structure_generator = StructureGenerator()
         
+        # 分析されたパターンを読み込み
+        self.beethoven_patterns = None
+        try:
+            import json
+            with open("beethoven_patterns.json", "r", encoding="utf-8") as f:
+                self.beethoven_patterns = json.load(f)
+                print("ベートーヴェンパターンを読み込みました")
+        except:
+            print("パターンファイルが見つかりません - デフォルトパターンを使用")
+        
         # デフォルトのトレーニングデータ
         self._train_default_patterns()
     
     def _train_default_patterns(self):
-        """デフォルトパターンで学習"""
-        # ベートーヴェン風の音階パターン
-        patterns = [
-            # ハ長調の基本的な動き
-            [60, 62, 64, 65, 67, 69, 71, 72],  # 上行音階
-            [72, 71, 69, 67, 65, 64, 62, 60],  # 下行音階
-            [60, 64, 67, 72, 67, 64, 60],      # アルペジオ
-            [60, 60, 60, 56, 57, 57, 57, 53],  # 運命の動機風
-            [60, 62, 64, 60, 64, 65, 67],      # 跳躍を含む
-        ]
-        
-        for pattern in patterns:
-            self.markov_model.train_pitch(pattern)
-        
-        # リズムパターン
-        rhythm_patterns = [
-            [1, 1, 1, 1],                      # 均等
-            [2, 1, 1],                         # 長短短
-            [1, 0.5, 0.5, 1, 1],              # シンコペーション
-            [0.5, 0.5, 0.5, 0.5, 2],          # 加速から減速
-            [3, 1],                            # 付点
-        ]
-        
-        for pattern in rhythm_patterns:
-            self.markov_model.train_rhythm(pattern)
+    """デフォルトパターンで学習"""
+    
+    # 分析データがある場合はそれを優先的に使用
+    if self.beethoven_patterns:
+        # 音程パターンを学習
+        if 'melodic_intervals' in self.beethoven_patterns:
+            # 頻出する音程シーケンスを作成
+            for interval_str, count in self.beethoven_patterns['melodic_intervals'].items():
+                try:
+                    # 3音パターンの場合
+                    if interval_str.startswith('(') and interval_str.endswith(')'):
+                        intervals = eval(interval_str)  # タプルとして評価
+                        if len(intervals) == 2:
+                            # 基準音を60（C4）として、パターンを生成
+                            pattern = [60, 60 + intervals[0], 60 + intervals[0] + intervals[1]]
+                            # 出現回数に応じて複数回学習
+                            for _ in range(min(count // 10, 5)):
+                                self.markov_model.train_pitch(pattern)
+                except:
+                    continue
+    
+    # 既存のデフォルトパターンも追加（フォールバック用）
+    patterns = [
+        [60, 62, 64, 65, 67, 69, 71, 72],  # 上行音階
+        [72, 71, 69, 67, 65, 64, 62, 60],  # 下行音階
+        [60, 64, 67, 72, 67, 64, 60],      # アルペジオ
+        [60, 60, 60, 56, 57, 57, 57, 53],  # 運命の動機風
+        [60, 62, 64, 60, 64, 65, 67],      # 跳躍を含む
+    ]
+    
+    for pattern in patterns:
+        self.markov_model.train_pitch(pattern)
+    
+    # リズムパターン（既存のまま）
+    rhythm_patterns = [
+        [1, 1, 1, 1],
+        [2, 1, 1],
+        [1, 0.5, 0.5, 1, 1],
+        [0.5, 0.5, 0.5, 0.5, 2],
+        [3, 1],
+    ]
+    
+    for pattern in rhythm_patterns:
+        self.markov_model.train_rhythm(pattern)
     
     def compose(self, total_measures: int, form: str = 'sonata') -> m21.stream.Score:
         """完全な楽曲を作曲"""
