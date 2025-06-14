@@ -249,13 +249,15 @@ if __name__ == "__main__":
     analyzer = KernAnalyzer()
     
     # kernファイルのディレクトリを指定
-    kern_directory = "beethoven-piano-sonatas/kern"
+    kern_directories = ["kern1", "kern2"]  # kern1とkern2の両方
     
-    # 分析実行
-    results = analyzer.analyze_all_files(kern_directory)
+    for kern_dir in kern_directories:
+        if os.path.exists(kern_dir):
+            print(f"\n{kern_dir}を分析中...")
+            results = analyzer.analyze_all_files(kern_dir)
     
     # 結果表示
-    print(f"\n分析完了: {results['analyzed_files']}/{results['total_files']} ファイル")
+    print(f"\n分析完了!")
     
     print("\n最も頻出する音程:")
     for interval, count in analyzer.get_most_common_patterns('melodic_intervals', 5):
