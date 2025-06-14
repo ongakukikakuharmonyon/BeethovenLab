@@ -9,7 +9,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 from typing import List, Dict, Tuple, Optional, Union
 import tempfile
 import os
