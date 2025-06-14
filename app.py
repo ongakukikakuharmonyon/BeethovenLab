@@ -11,6 +11,9 @@ from datetime import datetime
 import time
 import json
 import os
+from kern_analyzer import KernAnalyzer
+import os
+import json
 
 # カスタムモジュールのインポート
 try:
@@ -100,6 +103,21 @@ if 'style_profile' not in st.session_state:
     st.session_state.style_profile = None
 if 'generation_history' not in st.session_state:
     st.session_state.generation_history = []
+# ベートーヴェンパターンの読み込み
+if 'beethoven_patterns' not in st.session_state:
+    if os.path.exists("beethoven_patterns.json"):
+        # 既存の分析結果を読み込み
+        with open("beethoven_patterns.json", "r", encoding="utf-8") as f:
+            st.session_state.beethoven_patterns = json.load(f)
+    else:
+        # 分析を実行
+        with st.spinner("ベートーヴェンの楽譜を分析中..."):
+            analyzer = KernAnalyzer()
+            for kern_dir in ["kern1", "kern2"]:
+                if os.path.exists(kern_dir):
+                    analyzer.analyze_all_files(kern_dir)
+            analyzer.save_analysis("beethoven_patterns.json")
+            st.session_state.beethoven_patterns = analyzer.patterns
 
 # ヘッダー
 st.markdown('<h1 class="main-header">🎼 BeethovenLab</h1>', unsafe_allow_html=True)
