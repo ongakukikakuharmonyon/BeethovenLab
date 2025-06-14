@@ -216,7 +216,37 @@ with tab1:
                 st.success("✅ カスタムプロファイルを使用")
             elif use_custom_profile:
                 st.warning("⚠️ プロファイルが読み込まれていません")
+
+# Kernファイル分析セクション
+st.subheader("🔬 楽譜分析")
+if st.button("Kernファイルを分析"):
+        with st.spinner("分析中... これには数分かかります"):
+            analyzer = KernAnalyzer()
+            found_files = 0
+        
+        for kern_dir in ["kern1", "kern2"]:
+            if os.path.exists(kern_dir):
+                st.write(f"📁 {kern_dir} フォルダを分析中...")
+                files = [f for f in os.listdir(kern_dir) if f.endswith('.krn')]
+                st.write(f"  - {len(files)} 個のファイルを発見")
+                found_files += len(files)
+                
+                results = analyzer.analyze_all_files(kern_dir)
+        
+            if found_files > 0:
+                analyzer.save_analysis("beethoven_patterns.json")
+                st.session_state.beethoven_patterns = analyzer.patterns
+                st.success(f"✅ {found_files} 個のファイルの分析が完了しました！")
             
+            # 分析結果のプレビュー
+            st.write("**分析結果のサンプル:**")
+            st.write("最も頻出する音程:")
+            patterns = analyzer.get_most_common_patterns('melodic_intervals', 3)
+            for interval, count in patterns:
+                st.write(f"  - 音程 {interval}: {count}回")
+            else:
+                st.error("❌ Kernファイルが見つかりません")
+
             # 生成オプション
             st.subheader("生成オプション")
             
