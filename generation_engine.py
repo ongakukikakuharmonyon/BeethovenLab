@@ -923,25 +923,30 @@ class BeethovenComposerAdvanced:
     
 def apply_final_touches(self, score: m21.stream.Score):
         """最終的な調整を適用"""
+        # パートが存在するか確認
+        if not score.parts or len(score.parts) == 0:
+            return
+            
         # テンポ記号を追加
         tempo = m21.tempo.MetronomeMark(number=120, text="Allegro con brio")
-        score.parts[0].measure(1).insert(0, tempo)
+        if len(score.parts) > 0 and score.parts[0].measure(1):
+            score.parts[0].measure(1).insert(0, tempo)
         
         # 最初の拍子記号
         ts = m21.meter.TimeSignature('4/4')
         for part in score.parts:
-            part.measure(1).insert(0, ts)
+            if part.measure(1):
+                part.measure(1).insert(0, ts)
         
         # 調号を追加（修正版）
         try:
-            # m21.key.KeyでkeySignatureを取得する正しい方法
-            key_obj = m21.key.Key('C')  # デフォルトでC majorを使用
+            key_obj = m21.key.Key('C')
             ks = key_obj.keySignature
             if ks:
                 for part in score.parts:
-                    part.measure(1).insert(0, ks)
+                    if part.measure(1):
+                        part.measure(1).insert(0, ks)
         except Exception:
-            # エラーの場合は調号をスキップ
             pass
         
         # フェルマータを最後に追加
@@ -952,15 +957,23 @@ def apply_final_touches(self, score: m21.stream.Score):
                     last_element = element
             
             if last_element:
-                last_element.expressions.append(m21.expressions.Fermata())
+                try:
+                    last_element.expressions.append(m21.expressions.Fermata())
+                except:
+                    pass
         
         # 終止感を強化
-        last_measure_num = len(score.parts[0].getElementsByClass('Measure'))
-        for part in score.parts:
-            last_measure = part.measure(last_measure_num)
-            if last_measure:
-                # ritardandoを追加
-                last_measure.insert(0, m21.tempo.MetronomeMark(number=80, text="ritardando"))
+        try:
+            if len(score.parts) > 0:
+                measures = score.parts[0].getElementsByClass('Measure')
+                if measures:
+                    last_measure_num = len(measures)
+                    for part in score.parts:
+                        last_measure = part.measure(last_measure_num)
+                        if last_measure:
+                            last_measure.insert(0, m21.tempo.MetronomeMark(number=80, text="ritardando"))
+        except:
+            pass
 
 # Streamlit用のヘルパー関数
 @st.cache_data
