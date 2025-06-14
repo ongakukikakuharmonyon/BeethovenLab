@@ -273,7 +273,8 @@ class FileConverter:
     
     @staticmethod
     def score_to_lilypond(score: m21.stream.Score) -> str:
-        """楽譜をLilyPond形式に変換"""
+    """楽譜をLilyPond形式に変換"""
+    try:
         with tempfile.NamedTemporaryFile(delete=False, suffix='.ly') as tmp:
             score.write('lily', fp=tmp.name)
             tmp_path = tmp.name
@@ -283,6 +284,9 @@ class FileConverter:
         
         os.unlink(tmp_path)
         return lily_data
+    except Exception as e:
+        # LilyPondが利用できない場合は代替テキストを返す
+        return "% LilyPond is not available in this environment\n% Please install LilyPond to export in this format."
     
     @staticmethod
     def create_score_image(score: m21.stream.Score) -> Optional[bytes]:
