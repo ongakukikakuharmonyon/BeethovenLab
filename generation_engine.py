@@ -558,14 +558,14 @@ class BeethovenComposerAdvanced:
             with open("beethoven_patterns.json", "r", encoding="utf-8") as f:
                 self.beethoven_patterns = json.load(f)
                 print("ベートーヴェンパターンを読み込みました")
-            except:
-                print("パターンファイルが見つかりません - デフォルトパターンを使用")
+        except:
+            print("パターンファイルが見つかりません - デフォルトパターンを使用")
         
         # デフォルトのトレーニングデータ
         self._train_default_patterns()
     
     def _train_default_patterns(self):
-    """デフォルトパターンで学習"""
+        """デフォルトパターンで学習"""
     
     # 分析データがある場合はそれを優先的に使用
     if self.beethoven_patterns:
