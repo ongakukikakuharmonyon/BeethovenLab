@@ -541,7 +541,7 @@ class StructureGenerator:
         
         return structure_plan
         class BeethovenComposerAdvanced:
-    """高度なベートーヴェン風作曲システム"""
+            """高度なベートーヴェン風作曲システム"""
     
     def __init__(self, style_profile: Optional[Dict] = None):
         self.context = MusicalContext()
