@@ -540,8 +540,7 @@ class StructureGenerator:
                     })
         
         return structure_plan
-
-class BeethovenComposerAdvanced:
+        class BeethovenComposerAdvanced:
     """高度なベートーヴェン風作曲システム"""
     
     def __init__(self, style_profile: Optional[Dict] = None):
@@ -568,8 +567,8 @@ class BeethovenComposerAdvanced:
         """デフォルトパターンで学習"""
     
     # 分析データがある場合はそれを優先的に使用
-    if self.beethoven_patterns:
-        # 音程パターンを学習
+        if self.beethoven_patterns:
+            # 音程パターンを学習
         if 'melodic_intervals' in self.beethoven_patterns:
             # 頻出する音程シーケンスを作成
             for interval_str, count in self.beethoven_patterns['melodic_intervals'].items():
