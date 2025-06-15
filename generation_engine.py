@@ -949,7 +949,7 @@ class StructureGenerator:
         
         return m21.dynamics.Dynamic(selected)
     
-def apply_final_touches(self, score: m21.stream.Score):
+    def apply_final_touches(self, score: m21.stream.Score):
         """最終的な調整を適用"""
         # パートが存在するか確認
         if not score.parts or len(score.parts) == 0:
